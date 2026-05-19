@@ -17,6 +17,7 @@ export type ExpectedBand = {
 }
 
 const TOLERANCE = 0.05 // 5% 容差
+const RECENT_WINDOW = 2 // 只在最近 N 周里判定"关系破裂"——历史噪声不该被标为破裂
 
 export function computeExpectedBand(
   relation: MetricRelation,
@@ -36,8 +37,11 @@ export function computeExpectedBand(
     const actualGmv = metrics.gmvHistory.map((d) => d.value)
     const deviation = actualGmv.map((v, i) => +(v - expectedMid[i]).toFixed(1))
     const divergenceIndices: number[] = []
+    const recentStart = Math.max(0, expectedMid.length - RECENT_WINDOW)
     expectedMid.forEach((mid, i) => {
-      if (Math.abs(actualGmv[i] - mid) / mid > TOLERANCE) divergenceIndices.push(i)
+      if (i >= recentStart && Math.abs(actualGmv[i] - mid) / mid > TOLERANCE) {
+        divergenceIndices.push(i)
+      }
     })
     return { weeks, expectedMid, expectedLow, expectedHigh, deviation, divergenceIndices }
   }

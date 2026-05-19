@@ -86,9 +86,9 @@ export const mainStory: Story = {
               chartState: {
                 view: 'heatmap',
                 expectedBand: 'R3',
-                filters: { sku: ['SKU-B 家电主推'] },
+                filters: { sku: ['SKU-B · 家电主推'] },
                 caption: '家电子线 · SKU-B 同步断货',
-                focus: { cell: { row: 'SKU-B 家电主推', col: '周二' } },
+                focus: { cell: { row: 'SKU-B · 家电主推', col: '周二' } },
               },
             },
           ],
@@ -118,7 +118,7 @@ export const mainStory: Story = {
       chartState: {
         view: 'heatmap',
         expectedBand: 'R3',
-        focus: { cell: { row: 'SKU-A 服饰主推', col: '周二' } },
+        focus: { cell: { row: 'SKU-A · 服饰主推', col: '周二' } },
         caption: '根因：周二开始的库存断点',
       },
       annotations: [

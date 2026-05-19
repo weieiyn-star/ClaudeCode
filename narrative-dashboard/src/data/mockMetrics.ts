@@ -6,28 +6,32 @@
 
 const weekLabels = Array.from({ length: 26 }, (_, i) => `W${i + 1}`)
 
-// 共享的"市场节律"基准（让 GMV 和 UV 看上去高度相关）
-const baseRhythm = (i: number) => {
-  const trend = i * 0.6
-  const wave = Math.sin((i / 26) * Math.PI * 2.2) * 18
-  const noise = Math.sin(i * 1.7) * 4 + Math.cos(i * 2.3) * 3
-  return trend + wave + noise
-}
+// 设计：UV 是基础节律，GMV = k * UV + 微噪声（严格共行），W26 才打破关系。
+const K_BASE = 47 // GMV/UV 历史比值，使 GMV ~ 47 * UV
 
-const gmvHistory = weekLabels.map((label, i) => {
-  if (i < 25) {
-    return { week: label, value: Math.round(420 + baseRhythm(i) * 5) }
-  }
-  // W26：本应在 ~560 左右，实际跌到 ~460（-18%）
-  return { week: label, value: 460 }
-})
+const uvRhythm = (i: number) => {
+  const trend = i * 0.04
+  const wave = Math.sin((i / 26) * Math.PI * 2.2) * 0.9
+  const wobble = Math.sin(i * 1.7) * 0.3
+  return 10.2 + trend + wave + wobble
+}
 
 const uvHistory = weekLabels.map((label, i) => {
   if (i < 25) {
-    return { week: label, value: Math.round(9.6 + baseRhythm(i) * 0.07) }
+    return { week: label, value: +uvRhythm(i).toFixed(1) }
   }
   // W26：UV 反而上涨到 11.8（+8%）
   return { week: label, value: 11.8 }
+})
+
+const gmvHistory = weekLabels.map((label, i) => {
+  if (i < 25) {
+    // 历史 GMV = K_BASE * UV + 小噪声（保持在 ±2% 以内）
+    const microNoise = Math.sin(i * 0.9) * 5 + Math.cos(i * 1.4) * 3
+    return { week: label, value: Math.round(uvHistory[i].value * K_BASE + microNoise) }
+  }
+  // W26：UV 上涨理应 GMV 也上涨，但实际跌到 460（相对 W25 -18%）
+  return { week: label, value: 460 }
 })
 
 // 上一周（W25）作为对照基线
@@ -61,7 +65,7 @@ const cohortMatrix: number[][] = [
 ]
 
 // SKU × Weekday 热图（W26 那一周内每个工作日 × 关键 SKU 的库存可得率 %）
-const skus = ['SKU-A 服饰主推', 'SKU-B 家电主推', 'SKU-C 服饰新品', 'SKU-D 通用']
+const skus = ['SKU-A · 服饰主推', 'SKU-B · 家电主推', 'SKU-C · 服饰新品', 'SKU-D · 通用']
 const weekdays = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
 //   行=SKU，列=weekday，值=库存可得率 %
 const skuAvailability: number[][] = [

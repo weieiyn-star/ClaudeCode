@@ -278,9 +278,16 @@ function cohortView(state: ChartState, _beat: Beat, metrics: Metrics) {
     row.forEach((v, j) => data.push([j, metrics.cohorts.length - 1 - i, v]))
   })
   const max = Math.max(...metrics.cohortMatrix.flat().map((v) => Math.abs(v)))
+  const isNarrow = typeof window !== 'undefined' && window.innerWidth < 768
   return {
     backgroundColor: 'transparent',
-    grid: { ...baseGrid, left: 96, right: 80, top: 64, bottom: 56 },
+    grid: {
+      ...baseGrid,
+      left: isNarrow ? 80 : 96,
+      right: isNarrow ? 16 : 80,
+      top: 64,
+      bottom: 56,
+    },
     tooltip: {
       ...baseTooltip,
       trigger: 'item' as const,
@@ -361,9 +368,16 @@ function heatmapView(state: ChartState, _beat: Beat, metrics: Metrics) {
       data.push([j, y, v])
     })
   })
+  const isNarrow = typeof window !== 'undefined' && window.innerWidth < 768
   return {
     backgroundColor: 'transparent',
-    grid: { ...baseGrid, left: 168, right: 80, top: 60, bottom: 56 },
+    grid: {
+      ...baseGrid,
+      left: isNarrow ? 120 : 168,
+      right: isNarrow ? 24 : 80,
+      top: 60,
+      bottom: 56,
+    },
     tooltip: {
       ...baseTooltip,
       trigger: 'item' as const,
@@ -379,14 +393,14 @@ function heatmapView(state: ChartState, _beat: Beat, metrics: Metrics) {
       position: 'top' as const,
       axisLine: { show: false },
       axisTick: { show: false },
-      axisLabel: { ...baseAxisLabel, fontSize: 12, color: C.text },
+      axisLabel: { ...baseAxisLabel, fontSize: isNarrow ? 10 : 12, color: C.text },
     },
     yAxis: {
       type: 'category',
       data: [...visibleSkus].reverse(),
       axisLine: { show: false },
       axisTick: { show: false },
-      axisLabel: { ...baseAxisLabel, fontSize: 12, color: C.text },
+      axisLabel: { ...baseAxisLabel, fontSize: isNarrow ? 10 : 12, color: C.text },
     },
     visualMap: {
       min: 0,
@@ -419,7 +433,7 @@ function heatmapView(state: ChartState, _beat: Beat, metrics: Metrics) {
         label: {
           show: true,
           color: C.text,
-          fontSize: 11,
+          fontSize: isNarrow ? 9 : 11,
           formatter: (p: any) => `${p.value[2]}%`,
         },
         universalTransition: true,

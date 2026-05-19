@@ -44,7 +44,7 @@ export function BeatCard({
       ref={cardRef}
       data-beat-id={beat.id}
       className={[
-        'relative rounded-xl p-5 mb-6 border transition-all duration-300',
+        'relative rounded-xl p-4 md:p-5 mb-4 md:mb-6 border transition-all duration-300',
         active
           ? 'bg-ink-800/90 border-ink-500/50 shadow-[0_0_0_1px_rgba(91,141,239,0.25),0_8px_30px_rgba(0,0,0,0.35)]'
           : 'bg-ink-800/40 border-ink-700/40 opacity-70',
@@ -58,12 +58,19 @@ export function BeatCard({
           {index + 1} / {total}
         </span>
         {beat.reveals && (
-          <span className="ml-auto inline-flex items-center px-2 py-0.5 rounded-md border border-accent-bad/40 bg-accent-bad/10 text-accent-bad">
-            关系破裂 · {beat.reveals}
+          <span
+            className={[
+              'ml-auto inline-flex items-center px-2 py-0.5 rounded-md border',
+              beat.act === 'hook'
+                ? 'border-accent-info/40 bg-accent-info/10 text-accent-info'
+                : 'border-accent-bad/40 bg-accent-bad/10 text-accent-bad',
+            ].join(' ')}
+          >
+            {beat.act === 'hook' ? '建立预期' : '关系破裂'} · {beat.reveals}
           </span>
         )}
       </div>
-      <p className="text-base leading-relaxed text-ink-100">
+      <p className="text-[15px] md:text-base leading-relaxed text-ink-100">
         {tokens.map((t, i) =>
           t.kind === 'text' ? (
             <Fragment key={i}>{t.value}</Fragment>

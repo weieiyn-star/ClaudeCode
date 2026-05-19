@@ -34,6 +34,6 @@ export const entityToFocus: Record<
   'cat-appliance': { series: 'cat-appliance' },
   'new-user': { row: '新客' },
   'old-user': { row: '老客 6M+' },
-  'sku-a': { row: 'SKU-A 服饰主推', col: '周二' },
-  'sku-b': { row: 'SKU-B 家电主推', col: '周二' },
+  'sku-a': { row: 'SKU-A · 服饰主推', col: '周二' },
+  'sku-b': { row: 'SKU-B · 家电主推', col: '周二' },
 }

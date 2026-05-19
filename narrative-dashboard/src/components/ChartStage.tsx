@@ -18,7 +18,6 @@ export function ChartStage() {
     [currentBeat],
   )
 
-  // 跨 view 切换时，强制重建实例（fade 效果），同 view 内则 setOption merge 触发原生 morph。
   useEffect(() => {
     const view = currentBeat.chartState.view
     if (lastViewRef.current && lastViewRef.current !== view) {
@@ -27,7 +26,6 @@ export function ChartStage() {
     lastViewRef.current = view
   }, [currentBeat.chartState.view])
 
-  // 实体 hover → 触发图上 highlight
   useEffect(() => {
     if (!chartRef.current) return
     const ec = chartRef.current
@@ -42,7 +40,6 @@ export function ChartStage() {
     if ((view === 'pair' || view === 'line') && focus.series) {
       ec.dispatchAction({ type: 'highlight', seriesId: focus.series })
     } else if (view === 'bar' && focus.series) {
-      // 找到对应品类的 index
       const idx = metrics.categoryDelta.findIndex((c) => c.id === focus.series)
       if (idx >= 0) {
         ec.dispatchAction({
@@ -54,7 +51,6 @@ export function ChartStage() {
     } else if (view === 'cohort' && focus.row) {
       const rowIdx = metrics.cohorts.indexOf(focus.row)
       if (rowIdx >= 0) {
-        // heatmap 无内建 row highlight；用 axisPointer 替代
         ec.dispatchAction({
           type: 'showTip',
           seriesIndex: 0,
@@ -80,28 +76,38 @@ export function ChartStage() {
 
   return (
     <div className="h-full flex flex-col bg-ink-900">
-      <div className="px-6 pt-6 pb-2 flex items-baseline justify-between">
-        <div>
-          <div className="text-xs uppercase tracking-widest text-ink-500">
+      <div className="px-4 md:px-6 pt-3 md:pt-6 pb-1 md:pb-2 flex items-baseline justify-between gap-3">
+        <div className="min-w-0">
+          <div className="text-[10px] md:text-xs uppercase tracking-widest text-ink-500">
             {currentBeat.chartState.view.toUpperCase()} VIEW
           </div>
-          <div className="text-lg text-ink-100 font-medium">
+          <div className="text-sm md:text-lg text-ink-100 font-medium truncate">
             {currentBeat.chartState.caption ?? state.story.title}
           </div>
         </div>
         {expectedBandRel && (
-          <div className="text-xs text-ink-300 max-w-[50%] text-right leading-relaxed">
+          <div className="hidden md:block text-xs text-ink-300 max-w-[50%] text-right leading-relaxed shrink-0">
             <span className="inline-block w-2 h-2 rounded-sm bg-accent-info/40 mr-1.5 align-middle" />
             预期：{expectedBandRel.description}
-            {expectedBandRel.break && (
+            {expectedBandRel.break && currentBeat.act !== 'hook' && (
               <span className="ml-2 text-accent-bad">
-                · 本期 {expectedBandRel.break.kind} ({expectedBandRel.break.severity})
+                · 本期 {expectedBandRel.break.kind}（{expectedBandRel.break.severity}）
               </span>
             )}
           </div>
         )}
+        {expectedBandRel && (
+          <div
+            className={[
+              'md:hidden text-[10px] shrink-0',
+              currentBeat.act === 'hook' ? 'text-accent-info' : 'text-accent-bad',
+            ].join(' ')}
+          >
+            {currentBeat.act === 'hook' ? '预期关系' : '关系破裂'}
+          </div>
+        )}
       </div>
-      <div className="flex-1 px-2 pb-4 relative">
+      <div className="flex-1 px-1 md:px-2 pb-2 md:pb-4 relative">
         <ReactECharts
           key={fadeKey}
           option={option}

@@ -20,13 +20,13 @@ export function StoryCanvas() {
   return (
     <div
       data-story-scroll
-      className="h-full overflow-y-auto px-6 py-12 pb-[40vh]"
+      className="h-full overflow-y-auto px-4 md:px-6 py-6 md:py-12 pb-[30vh] md:pb-[40vh]"
     >
-      <header className="mb-10">
-        <div className="text-xs uppercase tracking-widest text-ink-300 mb-2">
+      <header className="mb-6 md:mb-10">
+        <div className="text-[10px] md:text-xs uppercase tracking-widest text-ink-300 mb-2">
           Narrative Dashboard · Demo
         </div>
-        <h1 className="text-2xl font-semibold text-ink-100 mb-2">
+        <h1 className="text-xl md:text-2xl font-semibold text-ink-100 mb-2">
           {state.story.title}
         </h1>
         <p className="text-sm text-ink-300">{state.story.subtitle}</p>
