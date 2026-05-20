@@ -1,0 +1,58 @@
+name: Deploy narrative-dashboard to GitHub Pages
+
+on:
+  push:
+    branches:
+      - claude/narrative-data-dashboard-FXaHw
+    paths:
+      - 'narrative-dashboard/**'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: narrative-dashboard
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: narrative-dashboard/package-lock.json
+
+      - run: npm ci
+
+      - name: Build (with Pages base path)
+        run: npm run build
+        env:
+          # GitHub Pages serves the project site at /<repo>/, so Vite assets must be prefixed.
+          VITE_BASE: /${{ github.event.repository.name }}/
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: narrative-dashboard/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
